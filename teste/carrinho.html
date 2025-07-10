@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrinho de Compras</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+  --corPrimaria: #000;
+  --corCinza: #f0f0f0;
+  --corTexto: #333;
+  --corAcento: #8B8589;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #fff;
+  color: var(--corTexto);
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+
+h1 {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.mensagem {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+  color: #999;
+}
+
+.carrinho-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  background-color: var(--corCinza);
+  padding: 15px;
+  border-radius: 10px;
+  gap: 15px;
+}
+
+.item img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-info h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.item-info p {
+  font-size: 14px;
+  color: #555;
+}
+
+.item-controls {
+  text-align: right;
+}
+
+.item-controls input {
+  width: 50px;
+  padding: 5px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.item-controls button {
+  background-color: transparent;
+  border: none;
+  color: red;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.total-area {
+  margin-top: 30px;
+  text-align: right;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.btn-pagar {
+  margin-top: 10px;
+  background-color: var(--corPrimaria);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-pagar:hover {
+  background-color: #222;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Seu Carrinho</h1>
+
+    <div id="carrinho-vazio" class="mensagem">Seu carrinho está vazio.</div>
+
+    <div id="carrinho-itens" class="carrinho-itens"></div>
+
+    <div class="total-area">
+      <p>Total: <span id="valor-total">R$ 0,00</span></p>
+      <button id="pagarBtn" class="btn-pagar">Pagar</button>
+    </div>
+  </div>
+
+  <script>
+    const carrinhoItens = document.getElementById("carrinho-itens");
+const valorTotal = document.getElementById("valor-total");
+const mensagemVazio = document.getElementById("carrinho-vazio");
+
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+function atualizarCarrinho() {
+  carrinhoItens.innerHTML = "";
+  let total = 0;
+
+  if (carrinho.length === 0) {
+    mensagemVazio.style.display = "block";
+  } else {
+    mensagemVazio.style.display = "none";
+  }
+
+  carrinho.forEach((item, index) => {
+    const subtotal = item.preco * item.qtd;
+    total += subtotal;
+
+    const div = document.createElement("div");
+    div.classList.add("item");
+
+    div.innerHTML = `
+      <img src="${item.img}" alt="${item.nome}">
+      <div class="item-info">
+        <h3>${item.nome}</h3>
+        <p>Preço: R$ ${item.preco.toFixed(2)}</p>
+        <p>Subtotal: R$ ${subtotal.toFixed(2)}</p>
+      </div>
+      <div class="item-controls">
+        <input type="number" min="1" value="${item.qtd}" onchange="alterarQuantidade(${index}, this.value)">
+        <br>
+        <button onclick="removerItem(${index})">Remover</button>
+      </div>
+    `;
+
+    carrinhoItens.appendChild(div);
+  });
+
+  valorTotal.textContent = `R$ ${total.toFixed(2)}`;
+}
+
+function alterarQuantidade(index, novaQtd) {
+  novaQtd = parseInt(novaQtd);
+  if (novaQtd < 1 || isNaN(novaQtd)) return;
+  carrinho[index].qtd = novaQtd;
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+  atualizarCarrinho();
+}
+
+function removerItem(index) {
+  carrinho.splice(index, 1);
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+  atualizarCarrinho();
+}
+
+document.getElementById("pagarBtn").addEventListener("click", () => {
+  if (carrinho.length === 0) {
+    alert("Seu carrinho está vazio!");
+  } else {
+    alert("Pagamento iniciado...");
+    // Aqui você pode redirecionar para o checkout
+  }
+});
+
+atualizarCarrinho();
+
+    
+
+
+
+function atualizarCarrinho() {
+  carrinhoItens.innerHTML = "";
+  let total = 0;
+
+  if (carrinho.length === 0) {
+    mensagemVazio.style.display = "block";
+  } else {
+    mensagemVazio.style.display = "none";
+  }
+
+  carrinho.forEach((item, index) => {
+    const subtotal = item.preco * item.qtd;
+    total += subtotal;
+
+    const div = document.createElement("div");
+    div.classList.add("item");
+
+    div.innerHTML = `
+      <img src="${item.img}" alt="${item.nome}">
+      <div class="item-info">
+        <h3>${item.nome}</h3>
+        <p>Preço: R$ ${item.preco.toFixed(2)}</p>
+        <p>Subtotal: R$ ${subtotal.toFixed(2)}</p>
+      </div>
+      <div class="item-controls">
+        <input type="number" min="1" value="${item.qtd}" onchange="alterarQuantidade(${index}, this.value)">
+        <br>
+        <button onclick="removerItem(${index})">Remover</button>
+      </div>
+    `;
+
+    carrinhoItens.appendChild(div);
+  });
+
+  valorTotal.textContent = `R$ ${total.toFixed(2)}`;
+}
+
+function alterarQuantidade(index, novaQtd) {
+  novaQtd = parseInt(novaQtd);
+  if (novaQtd < 1 || isNaN(novaQtd)) return;
+  carrinho[index].qtd = novaQtd;
+  atualizarCarrinho();
+}
+
+function removerItem(index) {
+  carrinho.splice(index, 1);
+  atualizarCarrinho();
+}
+
+document.getElementById("pagarBtn").addEventListener("click", () => {
+  if (carrinho.length === 0) {
+    alert("Seu carrinho está vazio!");
+  } else {
+    alert("Redirecionando para o pagamento...");
+    // Aqui você pode redirecionar ou integrar com backend
+  }
+});
+
+atualizarCarrinho();
+
+  </script>
+</body>
+</html>
